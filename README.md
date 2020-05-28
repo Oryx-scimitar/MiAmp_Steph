@@ -14,4 +14,9 @@ The protocol used:
   * Create summary file
 * Please check config file to check the parameters for snakemake and data
 
+Notes:
+ * database should be indexed using blast makeblastdb
+ * primer sequences must not contain any character than nucleotide ATGC. If you have any IUPAC nucleotide in primer sequence, create the combinations of nuleotide calls using script get_IUPAC_seqs.pl. "perl get_IUPAC_seqs.pl your_primers.fa > new_primers.fa" 
+ * please include all samples and its read files prefix in config (note the format)
+
 The reference paper is: Deepali Vasoya, Andy Law, Paolo Motta, Mingyan Yu, Adrian Muwonge, Elizabeth Cook, Xiaoying Li, Karen Bryson, Amanda MacCallam, Tatjana Sitt, PhilipToye, Barend Bronsvoort, Mick Watson, W. Ivan Morrison and Timothy Connelley. **_"Rapid identification of bovine MHCI haplotypes in genetically divergent cattle populations Using Next-Generation Sequencing."_**
