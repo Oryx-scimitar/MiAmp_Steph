@@ -15,6 +15,7 @@ The protocol used:
 * Please check config file to check the parameters for snakemake and data
 
 Notes:
+ * enviroment should have flash, sickle-trim and blast installed. Or use the conda_env_amplicon.yaml to install the required tools.
  * database should be indexed using blast makeblastdb
  * primer sequences must not contain any character than nucleotide ATGC. If you have any IUPAC nucleotide in primer sequence, create the combinations of nuleotide calls using script get_IUPAC_seqs.pl. "perl get_IUPAC_seqs.pl your_primers.fa > new_primers.fa" 
  * please include all samples and its read files prefix in config (note the format)
