@@ -242,7 +242,7 @@ print "Total sequences with $prefix primers in overlapped reads: $total_primer_r
 print "Total cluster: $count_clusters\n";
 print "Total singletons: $count_singles\n";
 
-open (STAT, ">", "$work_dir/$sample.$prefix. sort.stats.txt");
+open (STAT, ">", "$work_dir/$sample.$prefix.sort.stats.txt");
 print STAT "$sample\t$prefix\t$total_primer_reads\t$count_clusters\t$count_singles\n";
 close (STAT);
 
