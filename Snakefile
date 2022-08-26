@@ -1,9 +1,9 @@
 configfile: "config.yaml"
-# print(config['samples'][0])
+# print (config['samples'])
 
 rule main:
   # input: expand("results/{sample}/{sample}.clusters.blast.taxonomy.log", sample=config["samples"])
-  input: expand("results/{sample}/{sample}.{pcr}.clusters.blast.log", sample=config["samples"], pcr=config["primers"].keys())
+  input: expand("results/{sample}/{sample}.database.details.tsv", sample=config["samples"])
 
 rule trim:
  output:
@@ -20,9 +20,9 @@ rule trim:
   folder = "results/{sample}"
  shell:
   r"""sickle pe -f {input.read1} -r {input.read2} -o {output.read1} -p {output.read2} -s {output.singles} -t sanger -q {params.qual_threshold} -l {params.len_threshold} > {output.log}
-    fastqc -f fastq -o {params.folder} {input.read1}
-    fastqc -f fastq -o {params.folder} {input.read2}
-  """
+      fastqc -f fastq -o {params.folder} {input.read1}
+      fastqc -f fastq -o {params.folder} {input.read2}
+   """
 
 rule overlap:
  output: "results/{sample}/{sample}.overlap_by_flash.log"
@@ -35,54 +35,60 @@ rule overlap:
   directory = "results/{sample}",
   prefix = "{sample}"
  shell:
-  "flash -m {params.min_overlap} -M {params.max_overlap} -O -o {params.prefix} -d {params.directory} --threads=1 {input.read1} {input.read2} > {output}"
+  r"""flash -m {params.min_overlap} -M {params.max_overlap} -O -o {params.prefix} -d {params.directory} --threads=1 {input.read1} {input.read2} > {output}
+      fastqc -f fastq -o {params.directory} {params.directory}/{params.prefix}.extendedFrags.fastq
+   """
 
 rule sort:
- output: "results/{sample}/{sample}.{pcr}.sortPrimers.log"
+ output: "results/{sample}/{sample}.clusters.stats.tsv"
  input: "results/{sample}/{sample}.overlap_by_flash.log"
  params:
   prefix = "{sample}",
   directory = "results/{sample}",
-  pcr = "{pcr}",
-  primers = lambda wildcards: config['primers'][wildcards.pcr]
+  # pcr = "{pcr}",
+  pcr = lambda wildcards: config['pcr'][wildcards.sample],
+  primer = lambda wildcards: config['primers'][config['pcr'][wildcards.sample]]
+  # primer = lambda wildcards: config['primers'][wildcards.pcr]
  shell:
-  "perl scripts/sortPrimers.pl {params.prefix} {params.directory} {params.pcr} {params.primers} > {output}"
-
-rule filtering:
- output: "results/{sample}/{sample}.{pcr}.filter.log"
- input: "results/{sample}/{sample}.{pcr}.sortPrimers.log"
- params:
-  prefix = "{sample}",
-  directory = "results/{sample}",
-  pcr = "{pcr}",
-  length = lambda wildcards: config['amplicon_size'][wildcards.pcr],
-  no_of_clusters = config["no_of_clusters"]
- shell:
-  "perl scripts/filterSequences.pl {params.prefix} {params.directory} {params.pcr} {params.length} {params.no_of_clusters} > {output}"
+  "perl scripts/sortPrimers.pl --sample={params.prefix} --work_dir={params.directory} --primer={params.pcr} --primer_seq={params.primer}"
 
 rule blast:
- output: "results/{sample}/{sample}.{pcr}.clusters.blast"
- input: 
-  log = "results/{sample}/{sample}.{pcr}.filter.log"
+ output: 
+  blast1 = "results/{sample}/{sample}.clusters.database.blast",
+  blast2 = "results/{sample}/{sample}.clusters.nr.blast"
+ input: "results/{sample}/{sample}.clusters.stats.tsv"
  params:
-  reference = lambda wildcards: config['database'][wildcards.pcr],
-  query = "results/{sample}/{sample}.{pcr}.clusters.fasta"
+  # reference = lambda wildcards: config['database'][wildcards.pcr],
+  # pcr = lambda wildcards: config['pcr'][wildcards.sample],
+  reference = lambda wildcards: config['database'][config['pcr'][wildcards.sample]],
+  query = "results/{sample}/{sample}.clusters.filtered.fasta"
  shell:
-  "blastn -db {params.reference} -query {params.query} -outfmt '6 qseqid sseqid pident length qlen qstart qend slen sstart send mismatch gapopen evalue bitscore' -out {output}"
+  r"""
+  blastn -db {params.reference} -query {params.query} -outfmt '6 qseqid sseqid pident length qlen qstart qend slen sstart send mismatch gapopen evalue bitscore' -out {output.blast1} -max_target_seqs 10
+  blastn -remote -db nr -query {params.query} -outfmt '6 qseqid sacc pident length qlen qstart qend slen sstart send mismatch gapopen evalue bitscore sblastname ssciname scomname stitle' -out {output.blast2} -max_target_seqs 10
+  """
+   
    
 rule analyse_blast:
- output: "results/{sample}/{sample}.{pcr}.clusters.blast.log"
- input: "results/{sample}/{sample}.{pcr}.clusters.blast"
+ output: 
+  database = "results/{sample}/{sample}.database.details.tsv",
+  nr = "results/{sample}/{sample}.nr.details.tsv",
+ input: 
+  blast1 = "results/{sample}/{sample}.clusters.database.blast",
+  blast2 = "results/{sample}/{sample}.clusters.nr.blast",
  params:
   prefix = "{sample}",
-  pcr = "{pcr}",
   directory = "results/{sample}",
-  filtered = "results/{sample}/{sample}.{pcr}.clusters.details.txt",
-  clusters_fasta = "results/{sample}/{sample}.{pcr}.clusters.fasta",
-  cutoff = lambda wildcards: config['read_count_percent_threshold'][wildcards.pcr]
+  taxonomy = config['taxonomy'],
+  # pcr = "{pcr}"
+  pcr = lambda wildcards: config['pcr'][wildcards.sample]
  shell:
-  "perl scripts/reportMapping.pl {params.prefix} {params.directory} {params.pcr} {input} {params.filtered} {params.clusters_fasta} {params.cutoff} > {output}"
-  
+  r"""
+  perl scripts/reportMapping.pl --sample={params.prefix} --work_dir={params.directory} --primer={params.pcr} --blast_file={input.blast1} --output={output.database}
+  perl scripts/reportMapping.pl --sample={params.prefix} --work_dir={params.directory} --primer={params.pcr} --blast_file={input.blast2} --output={output.nr}
+  """
+
+
 
 
 
