@@ -121,10 +121,10 @@ There are multiple files generated during all steps. The details of each file is
 * *sample.primer.info.txt* has the information of primer sequences. Ideally, amplicon sequence should start and end with forward and reverse primers respectively. But due to size of amplicon (being shorter than sequencing read length) or PCR condition, sometimes the sequence doesn't start with forward primer nor ends with reverse primer. This file is the tab deliminated information of primer sequences and number of reads. 
 * *sample.seq.len_his.txt* has the information of sequence length after trimming primers off the sequence. 
 * *sample.clusters.fasta* has the sequences of all clusters. Clusters are the 100% identical sequences. The fasta header of each sequence represent the cluster details: unique id/read counts/read percentage/length of sequence/type of cluster. The types of cluster could be one of these:
-	chimera: sequence that has detected as PCR chimera
-	1bpVariant: sequene which has 1 mismatch with higher abundant sequence
-	ambiguous: sequence which has ambiguous basecall (N) 
-	filters: sequence which is not identified as any of above. 
+	1. chimera: sequence that has detected as PCR chimera
+	2. 1bpVariant: sequene which has 1 mismatch with higher abundant sequence
+	3. ambiguous: sequence which has ambiguous basecall (N) 
+	4. filters: sequence which is not identified as any of above. 
 * *sample.clusters.details.tsv* has the details of each cluster sequence.
 * *sample.clusters.stats.tsv* has the number of reads for each steps. The columns are sample, total reads with primers, total overlapped reads with primers, total single reads with primers, total clusters, total single copies, total chimeric reads, total reads with 1bp mismatch, total reads with low coverage, total reads with ambiguous calls, total filtered reads, total chimeric clusters, total clusters with 1bp mismatch, total clusters with low coverage, total clusters with ambiguous calls, total filtered clusters.
 	
