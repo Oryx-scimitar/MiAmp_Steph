@@ -1,23 +1,127 @@
-# MHC-ampliconSeq-analysis
+# MiAmp (Miseq Amplicon sequencing data analysis)
+
+These snakemake pipeline and interative perl scripts is developed to analyse the MHCI amplicon sequencing data or any targeted amplicon sequencing data (such as 16S/18S) using custom primers or any similar custom amplicon sequencing data.
 
 
-These snakemake pipeline and interative perl scripts is developed to analyse the MHCI amplicon sequencing data or any targeted amplicon sequencing data (such as 16S/18S). 
-The protocol used:
-* PCR primers are designed to target specific exons in DNA or cDNA libraries. 
-* Libraries amplified and sequenced using Miseq/Hiseq - <b>overlapping paired end reads</b>
-* Steps includes
-	* Quality trimming (using Sickle-trim and merging overlapping reads (Flash)
-	* Identify primers sequences (Multiple primer pairs can be used)
-	* Filter out PCR errors, PCR chimaeras, Low abundant sequences and unexpected length etc. 
-	* Blast high confident sequences on database
-	* Define new sequences. 
-  * Create summary file
-* Please check config file to check the parameters for snakemake and data
+### Workflow
+---
 
-Notes:
- * enviroment should have flash, sickle-trim and blast installed. Or use the conda_env_amplicon.yaml to install the required tools.
- * database should be indexed using blast makeblastdb
- * primer sequences must not contain any character than nucleotide ATGC. If you have any IUPAC nucleotide in primer sequence, create the combinations of nuleotide calls using script get_IUPAC_seqs.pl. "perl get_IUPAC_seqs.pl your_primers.fa > new_primers.fa" 
- * please include all samples and its read files prefix in config (note the format)
+<img width="617" alt="Screenshot 2022-08-26 at 10 02 19" src="https://user-images.githubusercontent.com/8590103/186868476-4f504bb6-7352-4e6d-8960-76fc7ddb689f.png">
 
+
+As shows in a workflow figure, it is split into two seperate analysis steps: Snakemake pipeline and creating summary tables
+
+## 1. Snakemake pipeline (steps in green backgroud)
+This pipeline analyse the raw sequencing data for each sample and produces the final results for each primer pairs used in the samples.
+
+   - It starts with quality trimming of raw data. 
+   - The high quality trimmed reads are then overlapped to generate extedened amplicon sequences.
+   - Each extended sequence is then searched for PCR primers used. It searched for the forward and reverse primers, remove the excat primer sequences from reads to remove PCR sites. 
+   
+### Data received from MiSeq (FASTQ):
+
+We receive data for each individual index and the folder names are given sample/library ID in samplesheet spreadsheet during sample submission. Each sample have two sequencing read files – forward and reverse. 
+
+All sequencing facility has their own format of data files and folder structure. Data we receive from MiSeq through Edinburgh Genomics have two read files (fastq.gz) – forward and reverse and text file with the information of both reads (.count file)
+
+  1.	*180831_M05898_0019_000000000-BYR6F_1_11441CT0099L01_1.fastq.count*
+  2.	*180831_M05898_0019_000000000-BYR6F_1_11441CT0099L01_1.fastq.gz*
+  3.	*180831_M05898_0019_000000000-BYR6F_1_11441CT0099L01_2.fastq.count*
+  4.	*180831_M05898_0019_000000000-BYR6F_1_11441CT0099L01_2.fastq.gz*
+
+If you want to check what these files have, simply use command less <file> command.
+For example, `less 180831_M05898_0019_000000000-BYR6F_1_11441CT0099L01_1.fastq.count`
+
+If you are using same index for multiple samples, we must make sure we assign samples with the correct files in the config file (see below).
+
+Raw reads files must end with *_1.fastq.gz* and *_2.fastq.gz* as Snakefile recognises forward and reverse read by this extension OR you can change the extension of the input reads in Snakefile
+
+### Conda environment:
+
+We need following packages installed in environment: Perl, Blast, Flash, Sickle. 
+There are two ways to setup conda environment. 1) using yml file 2) manully installing all packages. 
+1. Using yml file: I have attached yml file. Following command will help to install from this file: `conda env create -f environment.yml`
+2. Manually creating env and installing packages using following commands. “mhc” is the name of the environment, you can choice any name.
+```
+conda create --name amplicon
+proceed ([y]/n)?
+y
+source activate amplicon
+conda install -c conda-forge perl
+conda install -c bioconda blast
+conda install -c bioconda flash
+conda install -c bioconda sickle-trim
+conda install -c bioconda snakemake
+conda install -c bioconda fastqc
+```
+Everytime when you want to run scripts or pipeline, use following command to activate environment first: 
+`source activate amplicon`
+
+  
+### Folders and files: 
+  
+Create a main folder with project name and in this project folder should have following sub-folders:
+- **fastq**: It should have all sample folders with paired end data
+- **fasta**: 
+    - It should have all primer sequences in fasta format for all primer pairs used and indexed database.
+    - To index database, use this command: `makeblastdb -in <database.fa> -dbtype nucl`
+    - Primer sequences in fasta format. Make sure forward primers have “for” and reverse primers have “rev” in header. It doesn’t matter what else they are called in header but for and rev should be there. 
+    - Make sure you remove all ambiguous IUPAC nucleotide and put all possible primer sequences in fasta file. Check out the primer sequences in fasta folder.
+- **results**: This directory will have all output files generated by pipeline
+- **summary**: This folder will be used to create summary files for each sample
+- **scripts**: All the perl scripts that will be used by Snakemake and other steps will be here
+- **config.yaml**: It should be in your main project folder. Check out the attached example config file. You can modify it according to data you are analysing.
+    - Make sure you don’t use sample names starts with numeric digits. Sample names must start with alphabets. If sample names start with digits, the simple trick is to put an alphabet in front of all samples. That will work.
+- **Snakefile**: It should be in your main project folder.
+- **samplesheet.txt**: This file is the list of samples.
+
+The most important file to run pipeline is config.yaml where you are listing all samples. Make sure you are using right sample ids and locations of raw reads. 
+
+### Running pipeline:
+Before running pipeline, make sure you have following steps done.
+  * In main folder, all subfolders are present.
+  * In main folder, Snakefile and config file are present.
+  * Config file must have correct information in correct format. Use my test config file to cross check the format. 
+  * All reads should be in separate sample folders in fastq folder
+  * Database and primer sequences should be in fasta format in fasta folder
+  * Primer sequences should only have ATGC sequences and forward and reverse should be names as for and rev
+  * Sequence database must be indexed. 
+  * All the perl scripts must be in scripts folder
+
+Once above steps are done, follow the commands below:
+
+  1. To check if snakemake pipeline is ready to run and how many steps will be run, use this command:
+         `snakemake -p -n`
+	 
+  2. To run pipeline
+         `snakemake -p -j 3`
+      
+      Depending on the how many cores/processors you can use on system, change -j. 
+      Alternatavely, you can submit individual jobs for each sample on cluster (Check out the script *submit_snakemake_eddie.pl*
+  
+  It will take a while to finish running pipeline depending on number of clusters you want to check for artefacts in config file and number of samples you are analysing. 
+  
+  Once the pipeline is finished running, there will be many files presence in result folder for each sample. These outputs are summarised into final tables in next phase of pipeline
+ 
+# OUTPUT files:
+There are multiple files generated during all steps. The details of each file is as below:
+### Quality trimming:
+	* FASTQC reports are generated for raw reads. The file names are same as raw reads for each samples with *_fastqc.html* and *_fastqc.zip* extension. 
+	* Trimmed reads in fastq format. There are three trimmed fastq files created by sickle - *sample.trimmed_read1.fastq* and *sample.trimmed_read2.fastq* are paired end reads and *sample.trimmed_singles.fastq* is the file with only single end reads (it contains reads that passed filter in either the forward or reverse direction, but not the other).
+	* *sample.trimming_by_sickle.log* has information of number of trimmed reads. 
+
+### Overlap paired end reads:
+	* *sample.extendedFrags.fastq* is the fastq of overlaped (extended) reads. 
+	* *sample.extendedFrags_fastqc.html* and *sample.extendedFrags_fastqc.zip* is the FASTQC report of extended reads. 
+	* *sample.notCombined_1.fastq* and *sample.notCombined_2.fastq* are paired end reads that failed to overlap each other and hence stored in seperate files.
+	* *sample.overlap_by_flash.log" has the information of number of reads overlapped etc. 
+	* *sample.hist, sample.hist.innie, sample.hist.outie, sample.histogram, sample.histogram.innie, sample.histogram.outie* are the histogram files that are generated by Flash
+	
+## 2. Create summary tables
+   There are bunch of scripts developed to summarise the result of each sample and create final tables. This phage is more dependent on which PCR primers were used in terms of filtering out the results using read counts, length of amplicon and percent identity with database sequence.
+  
+ 
+
+---
+This pipeline is developed based on the following study:
 The reference paper is: Deepali Vasoya, Andy Law, Paolo Motta, Mingyan Yu, Adrian Muwonge, Elizabeth Cook, Xiaoying Li, Karen Bryson, Amanda MacCallam, Tatjana Sitt, PhilipToye, Barend Bronsvoort, Mick Watson, W. Ivan Morrison and Timothy Connelley. **_"Rapid identification of bovine MHCI haplotypes in genetically divergent cattle populations Using Next-Generation Sequencing."_**
