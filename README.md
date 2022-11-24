@@ -47,11 +47,11 @@ conda create --name amplicon
 proceed ([y]/n)?
 y
 source activate amplicon
+conda install -c bioconda snakemake
 conda install -c conda-forge perl
 conda install -c bioconda blast
 conda install -c bioconda flash
 conda install -c bioconda sickle-trim
-conda install -c bioconda snakemake
 conda install -c bioconda fastqc
 ```
 Everytime when you want to run scripts or pipeline, use following command to activate environment first: 
