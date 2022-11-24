@@ -1,0 +1,8 @@
+Building DAG of jobs...
+InputFunctionException in line 72 of /Users/stephbrien/Library/CloudStorage/OneDrive-UniversityofEdinburgh/Lab original folder/miseq/MiAmp_Steph/Trial/40-726192719/Snakefile:
+Error:
+  TypeError: list indices must be integers or slices, not str
+Wildcards:
+  sample=BEB011-BT
+Traceback:
+  File "/Users/stephbrien/Library/CloudStorage/OneDrive-UniversityofEdinburgh/Lab original folder/miseq/MiAmp_Steph/Trial/40-726192719/Snakefile", line 84, in <lambda>

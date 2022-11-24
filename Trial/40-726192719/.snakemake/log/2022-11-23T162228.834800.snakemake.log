@@ -1,0 +1,3 @@
+WorkflowError in line 1 of /Users/stephbrien/Library/CloudStorage/OneDrive-UniversityofEdinburgh/Lab original folder/miseq/MiAmp_Steph/Trial/40-726192719/Snakefile:
+Workflow defines configfile config.yaml but it is not present or accessible.
+  File "/Users/stephbrien/Library/CloudStorage/OneDrive-UniversityofEdinburgh/Lab original folder/miseq/MiAmp_Steph/Trial/40-726192719/Snakefile", line 1, in <module>

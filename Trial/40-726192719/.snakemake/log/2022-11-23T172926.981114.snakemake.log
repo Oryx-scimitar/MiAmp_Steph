@@ -1,0 +1,8 @@
+Building DAG of jobs...
+MissingInputException in rule main  in line 4 of /Users/stephbrien/Library/CloudStorage/OneDrive-UniversityofEdinburgh/Lab original folder/miseq/MiAmp_Steph/Trial/40-726192719/Snakefile:
+Missing input files for rule main:
+    affected files:
+        results/BEB012-BT/BEB012-BT.AnEh.clusters.blast.log
+        results/BEB012-BT/BEB012-BT.ThBa.clusters.blast.log
+        results/BEB011-BT/BEB011-BT.AnEh.clusters.blast.log
+        results/BEB011-BT/BEB011-BT.ThBa.clusters.blast.log
