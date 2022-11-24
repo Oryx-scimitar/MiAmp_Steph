@@ -1,27 +1,25 @@
-read_quality_threshold: 28
-read_trim_length_threshold: 150
+read_quality_threshold: 20
+read_trim_length_threshold: 100
 maximum_overlap: 300
-minimum_overlap: 20
-amplicon_size:
-  For1Rev2: 378
-  For3Rev1: 318
-  DRB3: 324
-read_count_percent_threshold: 
-  For1Rev2: 0.2
-  For3Rev1: 0.2
-  DRB3: 5
-no_of_clusters: 1000
+minimum_overlap: 10
 primers:
-  For1Rev2: "fasta/Bovine.For1Rev2.primers.fa"
-  For3Rev1: "fasta/Bovine.For3Rev1.primers.fa"
+  AnEh: "fasta/Cattle-AnEh.primers.fa"
+  ThBa: "fasta/Cattle-ThBa.primers.fa"
+  Tryp: "fasta/Cattle-Tryp.primers.fa"
 database:
-  For1Rev2: "fasta/Bovine.MHCI.fasta"
-  For3Rev1: "fasta/Bovine.MHCI.fasta"
+  AnEh: "fasta/SILVA_138.1_SSURef_NR99_tax.AnEh.fasta"
+  ThBa: "fasta/SILVA_138.1_SSURef_NR99_tax.ThBa.fasta"
+  Tryp: "fasta/SILVA_138.1_SSURef_NR99_tax.Tryp.fasta"
+taxonomy: "fasta/SILVA_taxonomy_table.txt"
 samples:
-  - 2372N0003
-  - 2372N0004
-  - 2372N0005
+  - RED000556
+  - RED000976
+  - RED000938
 reads:
-  2372N0003: "2372N0003_ATTACTCG-TATAGCCT_L001"
-  2372N0004: "2372N0004_ATTACTCG-ATAGAGGC_L001"
-  2372N0005: "2372N0005_ATTACTCG-CCTATCCT_L001"
+  RED000556: "RED000556/191028_M01270_0104_000000000-CP3B7_1_11901ML0291L01"
+  RED000976: "RED000976/191025_M01270_0103_000000000-CP33H_1_11901ML0017L01"
+  RED000938: "RED000938/191028_M05898_0120_000000000-CNRLW_1_11901ML0125L01"
+pcr:
+  RED000556: "Tryp"
+  RED000976: "AnEh"
+  RED000938: "ThBa"
