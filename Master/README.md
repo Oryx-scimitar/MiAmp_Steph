@@ -11,7 +11,7 @@ This snakemake pipeline and the interative perl scripts have been developed to a
 
 As shown in a workflow figure, it is split into two separate analysis steps: Snakemake pipeline and creating summary tables
 
-## 1. Snakemake pipeline (steps in green backgroud)
+## 1. Snakemake pipeline (steps in green background)
 This pipeline analyses the raw sequencing data for each sample and produces the final results for each primer pairs used in the samples.
 
    - It starts with quality trimming of raw data.
