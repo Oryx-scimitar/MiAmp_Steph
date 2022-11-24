@@ -313,7 +313,7 @@ if($total_primer_reads > 0){
 		my $per = sprintf("%.2f", (($unique_sequences{$seq}/$total_primer_reads)*100));
 		if ($unique_sequences{$seq} eq 1){
 			$count_singles++;
-			print SINGLES ">$count:$unique_sequences{$seq}:$per\n$seq\n";
+			print SINGLES ">$sample/$count/$unique_sequences{$seq}/$per\n$seq\n";
 		}
 		else{
 			$count_clusters++;
@@ -338,9 +338,9 @@ if($total_primer_reads > 0){
 					$count_gap++;
 					$details = "ambiguous_basecall\t";
 					print "ambiguous_basecall\n";
-					print FASTA_OUT ">$count_clusters/$unique_sequences{$seq}/$per/$len/ambiguous_basecall\n$seq\n";
-					print FASTA_OUT_SELECTED ">$count_clusters/$unique_sequences{$seq}/$per/$len/ambiguous_basecall\n$seq\n";
-					$ids{$seq} = "$count_clusters/$unique_sequences{$seq}/$per/$len/ambiguous_basecall";
+					print FASTA_OUT ">$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/ambiguous_basecall\n$seq\n";
+					print FASTA_OUT_SELECTED ">$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/ambiguous_basecall\n$seq\n";
+					$ids{$seq} = "$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/ambiguous_basecall";
 				}
 				else{
 					LOOP7: foreach $seq1 (sort {$unique_sequences{$b} <=> $unique_sequences{$a}} keys %unique_sequences){
@@ -375,8 +375,8 @@ if($total_primer_reads > 0){
 						$flag_pcr_error = 1;
 						$details = "1bpVariant\t$mismatch_with".":$fc:$mismatch";
 						print "1bpVariant\t$mismatch_with".":$fc:$mismatch\n";
-						print FASTA_OUT ">$count_clusters/$unique_sequences{$seq}/$per/$len/1bpVariant\n$seq\n";
-						$ids{$seq} = "$count_clusters/$unique_sequences{$seq}/$per/$len/1bpVariant";
+						print FASTA_OUT ">$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/1bpVariant\n$seq\n";
+						$ids{$seq} = "$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/1bpVariant";
 						$count_variants++;
 						$count_variants_reads = $count_variants_reads + $unique_sequences{$seq};
 					}
@@ -395,8 +395,8 @@ if($total_primer_reads > 0){
 													$flag_chimera = 1;
 													$details{$seq} = "chimera\t$ids{$seq1}-$ids{$seq2}";
 													print "chimera: $ids{$seq1}-$ids{$seq2}\n";
-													print FASTA_OUT ">$count_clusters/$unique_sequences{$seq}/$per/$len/chimera\n$seq\n";
-													$ids{$seq} = "$count_clusters/$unique_sequences{$seq}/$per/$len/chimera";
+													print FASTA_OUT ">$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/chimera\n$seq\n";
+													$ids{$seq} = "$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/chimera";
 													$count_chimera++;
 													$count_chimera_reads = $count_chimera_reads + $unique_sequences{$seq};
 													last LOOP6;
@@ -415,9 +415,9 @@ if($total_primer_reads > 0){
 						}
 						if ($flag_chimera == 0){
 							print "Filtered\n";
-							print FASTA_OUT ">$count_clusters/$unique_sequences{$seq}/$per/$len/filtered\n$seq\n";
-							print FASTA_OUT_SELECTED ">$count_clusters/$unique_sequences{$seq}/$per/$len/filtered\n$seq\n";
-							$ids{$seq} = "$count_clusters/$unique_sequences{$seq}/$per/$len/filtered";
+							print FASTA_OUT ">$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/filtered\n$seq\n";
+							print FASTA_OUT_SELECTED ">$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/filtered\n$seq\n";
+							$ids{$seq} = "$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/filtered";
 							$details = "filtered\t-";
 							$count_selected++;
 							$count_selected_reads = $count_selected_reads + $unique_sequences{$seq};
@@ -430,8 +430,8 @@ if($total_primer_reads > 0){
 				$count_low_reads = $count_low_reads + $unique_sequences{$seq};
 				# print "Not checked\n";
 				$details = "notChecked\t-";
-				print FASTA_OUT ">$count_clusters/$unique_sequences{$seq}/$per/$len/notChecked\n$seq\n";
-				$ids{$seq} = "$count_clusters/$unique_sequences{$seq}/$per/$len/notChecked";
+				print FASTA_OUT ">$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/notChecked\n$seq\n";
+				$ids{$seq} = "$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/notChecked";
 			}
 			print INFO "$ids{$seq}\t$details\t$seq\n";
 		}
