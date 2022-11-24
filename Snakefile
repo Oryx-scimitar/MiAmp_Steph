@@ -1,8 +1,7 @@
+
 configfile: "config.yaml"
-# print (config['samples'])
 
 rule main:
-  # input: expand("results/{sample}/{sample}.clusters.blast.taxonomy.log", sample=config["samples"])
   input: expand("results/{sample}/{sample}.database.details.tsv", sample=config["samples"])
 
 rule trim:
@@ -45,50 +44,41 @@ rule sort:
  params:
   prefix = "{sample}",
   directory = "results/{sample}",
-  # pcr = "{pcr}",
   pcr = lambda wildcards: config['pcr'][wildcards.sample],
   primer = lambda wildcards: config['primers'][config['pcr'][wildcards.sample]]
-  # primer = lambda wildcards: config['primers'][wildcards.pcr]
  shell:
   "perl scripts/sortPrimers.pl --sample={params.prefix} --work_dir={params.directory} --primer={params.pcr} --primer_seq={params.primer}"
 
 rule blast:
  output: 
   blast1 = "results/{sample}/{sample}.clusters.database.blast",
-  blast2 = "results/{sample}/{sample}.clusters.nr.blast"
  input: "results/{sample}/{sample}.clusters.stats.tsv"
  params:
-  # reference = lambda wildcards: config['database'][wildcards.pcr],
-  # pcr = lambda wildcards: config['pcr'][wildcards.sample],
   reference = lambda wildcards: config['database'][config['pcr'][wildcards.sample]],
   query = "results/{sample}/{sample}.clusters.filtered.fasta"
  shell:
   r"""
   blastn -db {params.reference} -query {params.query} -outfmt '6 qseqid sseqid pident length qlen qstart qend slen sstart send mismatch gapopen evalue bitscore' -out {output.blast1} -max_target_seqs 10
-  blastn -remote -db nr -query {params.query} -outfmt '6 qseqid sacc pident length qlen qstart qend slen sstart send mismatch gapopen evalue bitscore sblastname ssciname scomname stitle' -out {output.blast2} -max_target_seqs 10
   """
    
    
 rule analyse_blast:
  output: 
   database = "results/{sample}/{sample}.database.details.tsv",
-  nr = "results/{sample}/{sample}.nr.details.tsv",
  input: 
   blast1 = "results/{sample}/{sample}.clusters.database.blast",
-  blast2 = "results/{sample}/{sample}.clusters.nr.blast",
  params:
   prefix = "{sample}",
   directory = "results/{sample}",
   taxonomy = config['taxonomy'],
-  # pcr = "{pcr}"
-  pcr = lambda wildcards: config['pcr'][wildcards.sample]
  shell:
   r"""
-  perl scripts/reportMapping.pl --sample={params.prefix} --work_dir={params.directory} --primer={params.pcr} --blast_file={input.blast1} --output={output.database}
-  perl scripts/reportMapping.pl --sample={params.prefix} --work_dir={params.directory} --primer={params.pcr} --blast_file={input.blast2} --output={output.nr}
+  perl scripts/reportMapping.pl --sample={params.prefix} --taxonomy={params.taxonomy} --work_dir={params.directory} --blast_file={input.blast1} --output={output.database}
   """
 
 
 
 
 
+
+  
