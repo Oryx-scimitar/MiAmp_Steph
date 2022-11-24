@@ -8,32 +8,30 @@ my $sample = "sample";
 my $work_dir = "results";
 my $blast_file = "";
 my $in_taxonomy_details = "";
-my $primer = "test";
 my $output = "test";
 
 GetOptions(
     'sample=s'    => \$sample,
     'work_dir=s'     => \$work_dir, 
     'blast_file=s'     => \$blast_file,
-    # 'taxonomy=s'	=> \$in_taxonomy_details,
+    'taxonomy=s'	=> \$in_taxonomy_details,
     'output=s'	=> \$output,
-    'primer=s'	=> \$fc
 ) or print "Invalid options\n";
 
-# my %taxonomy = ();
-# my %species = ();
-# if ( -e $in_taxonomy_details ){
-# 	open(TAX, "$in_taxonomy_details");
-# 	while(<TAX>){
-# 		chomp $_;
-# 		@words = split("\t", $_);
-# 		$taxonomy{$words[0]} = $words[1];
-# 		$species{$words[0]} = $words[2];
-# 	} 
-# }
-# else{
-# 	print "Cannot open $in_taxonomy_details\n";
-# }
+my %taxonomy = ();
+my %species = ();
+if ( -e $in_taxonomy_details ){
+	open(TAX, "$in_taxonomy_details");
+	while(<TAX>){
+		chomp $_;
+		@words = split("\t", $_);
+		$taxonomy{$words[0]} = $words[1];
+		$species{$words[0]} = $words[2];
+	} 
+}
+else{
+	print "Cannot open $in_taxonomy_details\n";
+}
 
 my $id = "";
 my %refs = ();
@@ -105,7 +103,7 @@ if (-e $blast_file) {
 				$to_write_species = "";
 				foreach $ref (@ordered_ref){
 					$to_write_ref = $to_write_ref."$ref,";
-					$to_write_taxonomy = $to_write_taxonomy."$taxonomy{$ref}, ";
+					# $to_write_taxonomy = $to_write_taxonomy."$taxonomy{$ref}, ";
 					$to_write_species = $to_write_species."$species{$ref}, ";
 				}
 				chop $to_write_ref;
@@ -115,12 +113,13 @@ if (-e $blast_file) {
 				chop $to_write_taxonomy;
 				chop $to_write_taxonomy;
 
-				print LOG "$id\t$to_write_ref\t$identity{$id}\t$query_cover{$id}\t$match{$id}\t$error{$id}\t$gap{$id}\t$q_len{$id}\t$q_start{$id}-$q_end{$id}\t$sequence\n";
+				print LOG "$id\t$to_write_ref\t$to_write_species\t$identity{$id}\t$query_cover{$id}\t$match{$id}\t$error{$id}\t$gap{$id}\t$q_len{$id}\t$q_start{$id}-$q_end{$id}\t$sequence\n";
 			}
 			else{
-				print LOG "$id\tunknown\t-\t-\t-\t-\t-\t".length($sequence)."\t-\t$sequence\n";
+				print LOG "$id\tunknown\t-\t-\t-\t-\t-\t-\t".length($sequence)."\t-\t$sequence\n";
 			}
 		}
 	}
 }
+
 
