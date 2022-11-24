@@ -324,7 +324,7 @@ if($total_primer_reads > 0){
 			my $mismatch_with = "";
 			my $fc = 0;
 			my $flag_gap = 0;
-			if ($count_clusters <= 100){
+			if ($count_clusters <= 200){
 				print "Checking $count_clusters/$unique_sequences{$seq}/$per: ";
 				my @nucl = split //, $seq;
 				LOOPN: for($i = 0; $i < scalar(@nucl); $i++){
