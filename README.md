@@ -138,7 +138,18 @@ There are multiple files generated during all steps. The details of each file is
 
 	
 ## 2. Create summary tables
-   There are bunch of scripts developed to summarise the result of each sample and create final tables. This phage is more dependent on which PCR primers were used in terms of filtering out the results using read counts, length of amplicon and percent identity with database sequence.
+   There are bunch of scripts developed to summarise the result of each sample and create final tables. This phage is more dependent on which PCR primers were used in terms of filtering out the results using read counts, length of amplicon and percent identity with database sequence. The script summaryTables.pl can create these tables in folder summary. 
+   To run it:
+   
+   `perl scripts/summaryTables.pl example.samplesheet.txt`
+   
+summary.discarded.txt, summary.txt and summary_read_counts.tsv are the main tables that has the information of all samples in single file. While the summary folder has the summary tables and fasta file created for individual samples.
+
+#Running remote blast on NCBI NR database:
+   
+   `perl scripts/remote.blast.pl example.samplesheet.txt`
+   
+   This script runs blast remotely on ncbi nr database for all filtered sequences of all samples. There will be nr.blast.tsv files created for individual sampels in summary folder. 
   
  
 
