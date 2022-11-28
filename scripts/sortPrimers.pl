@@ -290,6 +290,8 @@ my $count = 0;
 my $count_variants_reads = 0;
 my $count_chimera_reads = 0;
 my $count_selected_reads = 0;
+my $short_reads = 0;
+my $short = 0;
 my $count_low_reads = 0;
 my $count_gap_reads = 0;
 my $count_variants = 0;
@@ -341,6 +343,13 @@ if($total_primer_reads > 0){
 					print FASTA_OUT ">$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/ambiguous_basecall\n$seq\n";
 					print FASTA_OUT_SELECTED ">$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/ambiguous_basecall\n$seq\n";
 					$ids{$seq} = "$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/ambiguous_basecall";
+				}
+				elsif ($len <= 50){
+					$short_reads = $short_reads + $unique_sequences{$seq};
+					$short++;
+					$details = "Too short\t";
+					print FASTA_OUT ">$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/tooShort\n$seq\n";
+					$ids{$seq} = "$sample/$count_clusters/$unique_sequences{$seq}/$per/$len/tooShort";	
 				}
 				else{
 					LOOP7: foreach $seq1 (sort {$unique_sequences{$b} <=> $unique_sequences{$a}} keys %unique_sequences){
@@ -445,7 +454,7 @@ print "Total cluster: $count_clusters\n";
 print "Total singletons: $count_singles\n";
 
 open (STATS, ">$work_dir/$sample.clusters.stats.tsv") or die "Cannot write $work_dir/$sample.clusters.stats.tsv\n";
-print STATS "$sample\t$total_primer_reads\t$total_primer_reads_flash\t$total_primer_reads_single\t$count_clusters\t$count_singles\t$count_chimera_reads\t$count_variants_reads\t$count_low_reads\t$count_gap_reads\t$count_selected_reads\t$count_chimera\t$count_variants\t$count_low\t$count_gap\t$count_selected\n";
+print STATS "$sample\t$total_primer_reads\t$total_primer_reads_flash\t$total_primer_reads_single\t$count_clusters\t$count_singles\t$count_chimera_reads\t$count_variants_reads\t$short_reads\t$count_low_reads\t$count_gap_reads\t$count_selected_reads\t$count_chimera\t$count_variants\t$short\t$count_low\t$count_gap\t$count_selected\n";
 close(STATS);
 
 
