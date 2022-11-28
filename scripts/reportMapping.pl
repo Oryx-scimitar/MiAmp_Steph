@@ -81,7 +81,7 @@ else{
 }
 
 open (LOG, ">$output") or print "Cannot write $output\n";
-print LOG "sequence_id\tReference_id\tPercent_identity\tQuery_cover\tAlignment_length\tErrors\tGaps\tQuery length\tQuery_start-Query_end\tsequence\n";
+print LOG "sequence_id\tReference_id\tSpecies\tPercent_identity\tQuery_cover\tAlignment_length\tErrors\tGaps\tQuery length\tQuery_start-Query_end\tsequence\n";
 
 if (-e $blast_file) {
 	print "$work_dir/$sample.clusters.filtered.fasta\n";
@@ -121,5 +121,4 @@ if (-e $blast_file) {
 		}
 	}
 }
-
 
