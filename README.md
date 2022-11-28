@@ -1,6 +1,6 @@
 # MiAmp (Miseq Amplicon sequencing data analysis)
 
-These snakemake pipeline and interative perl scripts is developed to analyse the MHCI amplicon sequencing data or any targeted amplicon sequencing data (such as 16S/18S) using custom primers or any similar custom amplicon sequencing data.
+These snakemake pipeline and interative perl scripts is developed to analyse the targeted amplicon sequencing data (such as 16S/18S) using custom primers.
 
 
 ### Workflow
