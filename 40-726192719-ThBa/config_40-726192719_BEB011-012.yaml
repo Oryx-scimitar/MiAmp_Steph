@@ -1,0 +1,20 @@
+read_quality_threshold: 20
+read_trim_length_threshold: 100
+maximum_overlap: 300
+minimum_overlap: 10
+primers:
+  AnEh: "fasta/Cattle-AnEh.primers.fa"
+  ThBa: "fasta/Cattle-ThBa.primers.fa"
+database:
+  AnEh: "fasta/SILVA_138.1_SSURef_NR99_tax.AnEh.fasta"
+  ThBa: "fasta/SILVA_138.1_SSURef_NR99_tax.ThBa.wildlife.fasta"
+taxonomy: "fasta/SILVA_taxonomy_table_wildlife.txt"
+samples:
+  - BEB011-BT
+  - BEB012-BT
+reads:
+  BEB011-BT: "BEB011-BT/BEB011-BT"
+  BEB012-BT: "BEB012-BT/BEB012-BT"
+pcr:
+  BEB011-BT: "ThBa"
+  BEB012-BT: "ThBa"
