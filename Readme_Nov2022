@@ -1,0 +1,96 @@
+### Bioinformatics for Sep 2022 Theileria/babesia and anaplasma/ehrlichia seq run
+Run updates to scripts by DV to produce summary scripts
+#N.B. Requires rerunning whole pipeline as some upstream edits
+
+## Connect to git and github
+Clone new branch from MiAmp_master to local directory
+`git clone -b Summary_scripts --single-branch https://github.com/Oryx-scimitar/MiAmp_Steph.git`
+Move to this branch
+`cd Summary_scripts`
+Confirm working on correct branch
+`git branch -a`
+Rename branch to include branch name
+`mv MiAmp_Steph MiAmp_Steph_Summary_scripts`
+
+
+# Set up conda environment using instructions in MiAmp main branch
+Automatic set up with .yaml file failed, so followed instructions for manual set up
+enviroment name = amplicon
+previously set up conda enviroment = miseqhaem
+ To activate this environment, use e.g.
+
+ `conda activate amplicon`
+
+To deactivate an active environment, use
+     `conda deactivate`
+
+
+### Folders and files
+
+# Create directory for each seq run and primer set
+`mkdir 40-726192719-AnEh 40-726192719-ThBa`
+Move to one of these directories
+`cd 40-726192719-AnEh`
+Repeat following steps for each seq run and primer set
+
+## Create output subfolders
+`mkdir results summary`
+
+# Fastq
+Add some example project raw data folders to fastq folder
+`cp -r ~/OneDrive\ -\ University\ of\ Edinburgh/Lab_original/MiAmp_Steph/40-726192719-ThBa/fastq .`
+
+# Fasta
+Transfer fasta folder with primer fasta files and phylogeny database files
+`cp -r ~/OneDrive\ -\ University\ of\ Edinburgh/Lab_original/MiAmp_Steph/40-726192719-AnEh/fasta .`
+Index database if necessary e.g.
+`makeblastdb -in <SILVA_138.1_SSURef_NR99_tax.ThBa.wildlife.fasta> -dbtype nucl`
+
+# Scripts
+Transfer scripts from working branch
+`cp -r ../scripts .`
+
+# Config file
+Add previously made config file for the dataset to the main project folder
+`cp ../../40-726192719-ThBa/config_40-726192719-ThBa.yaml .`
+
+# Snakefile
+Add to main project folder
+`cp ../../Master/Snakefile .`
+edit Snakefile line 2 to reference correct config file
+
+# Samplesheet
+Create a sample sheet with a list of sample ids
+Save in main project folder
+
+# Activate conda environment
+`conda activate amplicon`
+
+**Consistent error when try to run snakefile: no reference to pcr on config files**
+*Await response from Deepali re values for 'pcr' to include on config files*
+
+Try running summaryTables on trial files: illegal division by zero error due to rule at line 36:
+
+```
+my $total_reads = 0;
+if (-e $file1){
+  open(IN, "$file1");
+  LOOP0: while (<IN>){
+    chomp $_;
+    @words = split("\t", $_);
+    if ($library_id eq $words[0]){
+      $total_reads = $words[1];
+      last LOOP0;
+    }
+  }
+  close(IN);
+  ```
+
+  If set line 36 to:
+  `my $total_reads = 1;`
+  file executes
+**To be explored!**
+
+# Explore 'illegal division by zero' error
+Trial reusing summary files with June 2022 data
+Import files into miseq git folder to enable version control
